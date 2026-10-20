@@ -6,32 +6,33 @@
   <title>Geometric Dash</title>
   <style>
     :root {
-      --bg-1: #0d1120;
-      --bg-2: #1a2442;
-      --panel: rgba(17, 20, 36, 0.88);
-      --panel-border: rgba(255,255,255,0.16);
-      --gd-blue: #3d9bff;
-      --gd-sky: #79d9ff;
-      --gd-orange: #ff8f2d;
-      --gd-purple: #7f5af0;
-      --gd-pink: #ff5ec7;
-      --gd-green: #7ef7a1;
-      --gd-red: #ff5a5a;
-      --gd-deep-red: #b0003a;
-      --gd-dark-red: #4b0010;
-      --text: #ecf5ff;
-      --shadow: rgba(8, 10, 18, 0.75);
+      --bg-dark: #0b0f1b;
+      --bg-mid: #171b2e;
+      --bg-panel: rgba(24, 8, 16, 0.9);
+      --panel-border: rgba(255,255,255,0.14);
+      --pink-1: #ff6bb7;
+      --pink-2: #ff4f95;
+      --red-1: #ff5d75;
+      --orange-1: #ffb26b;
+      --yellow-1: #ffeb8d;
+      --purple-1: #6346d8;
+      --purple-2: #3e2f9c;
+      --blue-1: #8bd8ff;
+      --blue-2: #4a8bff;
+      --text: #f6f3ff;
+      --shadow-dark: rgba(0, 0, 0, 0.45);
     }
 
     * { box-sizing: border-box; }
 
     html, body {
       margin: 0;
+      width: 100%;
       height: 100%;
-      background: #000;
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
       overflow: hidden;
+      background: #000;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
     }
 
     body {
@@ -42,70 +43,69 @@
 
     #game-shell {
       position: relative;
-      width: min(100vw, 1120px);
-      height: min(100vh, 640px);
-      background: linear-gradient(180deg, #1a2a48 0%, #0a1426 100%);
-      border: 4px solid rgba(255,255,255,0.13);
+      width: min(100vw, 1100px);
+      height: min(100vh, 620px);
+      background: linear-gradient(180deg, #181a2d 0%, #0d1320 100%);
+      border: 4px solid rgba(255,255,255,0.15);
       border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 24px 70px rgba(0,0,0,0.45), inset 0 0 0 2px rgba(255,255,255,0.06);
+      box-shadow: 0 22px 60px rgba(0,0,0,0.45);
     }
 
     canvas {
       display: block;
       width: 100%;
       height: 100%;
-      background: linear-gradient(180deg, #0d1832 0%, #141f3c 40%, #170d26 100%);
+      background: linear-gradient(180deg, #0e1a2f 0%, #171c34 34%, #1a0d25 100%);
       touch-action: none;
       user-select: none;
     }
 
     .hud {
       position: absolute;
-      top: 18px;
       left: 18px;
       right: 18px;
+      top: 18px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      align-items: center;
+      z-index: 12;
       pointer-events: none;
-      z-index: 15;
     }
 
     .hud-card {
-      background: rgba(12, 18, 30, 0.7);
-      border: 2px solid rgba(255,255,255,0.13);
+      background: rgba(17, 18, 25, 0.68);
+      border: 2px solid rgba(255,255,255,0.12);
       border-radius: 12px;
-      padding: 10px 14px;
+      padding: 10px 12px;
       box-shadow: inset 0 0 0 2px rgba(255,255,255,0.04);
     }
 
     .level-text {
-      font-size: 13px;
-      letter-spacing: 0.13em;
-      text-transform: uppercase;
-      color: var(--gd-sky);
+      color: #8bdcff;
       font-weight: 900;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-size: 12px;
     }
 
     .status-text {
-      font-size: 12px;
+      color: #edf4ff;
+      font-weight: 800;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #fbe7ff;
-      font-weight: 800;
+      font-size: 11px;
     }
 
     .controls-bar {
       position: absolute;
-      bottom: 18px;
       left: 18px;
       right: 18px;
+      bottom: 18px;
+      z-index: 12;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      z-index: 15;
       pointer-events: none;
     }
 
@@ -117,28 +117,28 @@
 
     .action-btn {
       border: 0;
-      background: linear-gradient(180deg, #ffb033 0%, #ff7c2a 100%);
-      color: #fff;
       border-radius: 12px;
-      min-width: 110px;
+      min-width: 108px;
       min-height: 52px;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 900;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       cursor: pointer;
-      box-shadow: 0 8px 0 rgba(129, 49, 0, 0.8), 0 12px 20px rgba(0,0,0,0.2);
+      color: white;
+      background: linear-gradient(180deg, #ffba45 0%, #ff7b2a 100%);
+      box-shadow: 0 8px 0 rgba(122, 54, 9, 0.9), 0 12px 18px rgba(0,0,0,0.24);
       transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    .pause-btn {
+      background: linear-gradient(180deg, #7b7eff 0%, #485bdc 100%);
+      box-shadow: 0 8px 0 rgba(18, 31, 105, 0.9), 0 12px 18px rgba(0,0,0,0.24);
     }
 
     .action-btn:active {
       transform: translateY(3px);
-      box-shadow: 0 4px 0 rgba(129,49,0,0.8), 0 8px 16px rgba(0,0,0,0.18);
-    }
-
-    .pause-btn {
-      background: linear-gradient(180deg, #7d7dff 0%, #4b59d8 100%);
-      box-shadow: 0 8px 0 rgba(22, 33, 98, 0.9), 0 12px 20px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 0 rgba(122, 54, 9, 0.9), 0 7px 14px rgba(0,0,0,0.2);
     }
 
     .menu-overlay {
@@ -148,20 +148,19 @@
       align-items: center;
       justify-content: center;
       z-index: 20;
-      background: linear-gradient(180deg, rgba(10, 16, 26, 0.72), rgba(12, 17, 26, 0.82));
-      backdrop-filter: blur(2px);
+      background: linear-gradient(180deg, rgba(17, 7, 12, 0.45), rgba(12, 11, 20, 0.7));
     }
 
     .menu-card {
-      width: min(90%, 560px);
+      width: min(82%, 640px);
       min-height: 360px;
-      padding: 20px 22px 18px;
+      padding: 18px 24px 16px;
       border-radius: 18px;
-      background: linear-gradient(180deg, rgba(45, 4, 15, 0.96), rgba(20, 10, 17, 0.96));
-      border: 4px solid rgba(255,255,255,0.16);
-      box-shadow: 0 18px 35px rgba(0,0,0,0.35), inset 0 0 0 2px rgba(255,255,255,0.04);
-      text-align: center;
+      border: 4px solid rgba(255,255,255,0.12);
+      background: linear-gradient(180deg, rgba(47, 0, 18, 0.96), rgba(31, 7, 17, 0.96));
+      box-shadow: 0 22px 50px rgba(0,0,0,0.38), inset 0 0 0 2px rgba(255,255,255,0.04);
       position: relative;
+      text-align: center;
     }
 
     .menu-card::before {
@@ -173,101 +172,108 @@
       pointer-events: none;
     }
 
-    .menu-head {
-      margin-top: 10px;
-      margin-bottom: 12px;
+    .menu-header {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      color: #f9f3ff;
-      font-size: 14px;
-      letter-spacing: 0.18em;
+      gap: 12px;
+      margin: 8px 0 10px;
+      font-size: 12px;
       text-transform: uppercase;
+      letter-spacing: 0.2em;
       font-weight: 900;
+      color: rgba(255,255,255,0.88);
     }
 
-    .menu-head .orb {
+    .menu-header .dot {
       width: 12px;
       height: 12px;
       border-radius: 50%;
-      background: linear-gradient(180deg, #ffef87 0%, #ffd23d 100%);
-      box-shadow: 0 0 14px rgba(255, 210, 61, 0.7);
+      background: linear-gradient(180deg, #ffe273 0%, #ffcb42 100%);
+      box-shadow: 0 0 12px rgba(255, 198, 60, 0.7);
     }
 
-    h1 {
-      margin: 0 0 12px;
-      font-size: clamp(2.1rem, 4vw, 4.2rem);
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      font-weight: 900;
-      color: #ffebff;
-      line-height: 0.9;
-      text-shadow:
-        0 4px 0 #7e0d34,
-        0 8px 0 #43081b,
-        0 14px 26px rgba(255, 94, 127, 0.35);
+    .title-wrap {
       position: relative;
       z-index: 1;
-      background: linear-gradient(180deg, #ffd3e9 0%, #ff7a9a 15%, #ff5e9c 35%, #ff6d7a 60%, #ff8b54 100%);
+      margin-top: 4px;
+      margin-bottom: 6px;
+    }
+
+    .title-wrap h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 5vw, 4.2rem);
+      line-height: 0.9;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 900;
+      color: #ffedf8;
+      text-shadow:
+        0 4px 0 #7b0d39,
+        0 8px 0 #4c061a,
+        0 18px 24px rgba(255, 90, 126, 0.35);
+      background: linear-gradient(180deg, #ffd9e9 0%, #ff8db3 18%, #ff6997 36%, #ff7e6f 58%, #ffb061 100%);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
+    .title-wrap .small {
+      letter-spacing: 0.19em;
+    }
+
     .subtext {
-      margin: 0 0 18px;
-      color: rgba(239, 245, 255, 0.8);
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
+      margin: 8px 0 20px;
       font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: rgba(255,255,255,0.75);
+      font-weight: 700;
     }
 
     .level-picker {
+      position: relative;
+      z-index: 1;
       display: grid;
       grid-template-columns: repeat(2, minmax(160px, 1fr));
       gap: 12px;
-      margin: 16px auto 18px;
-      max-width: 430px;
-      position: relative;
-      z-index: 1;
+      max-width: 420px;
+      margin: 0 auto 18px;
     }
 
     .level-btn {
       border: 0;
       border-radius: 12px;
-      background: linear-gradient(180deg, #4f6fff 0%, #2859d6 100%);
       padding: 14px 12px;
       font-size: 14px;
-      font-weight: 900;
-      letter-spacing: 0.09em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
+      font-weight: 900;
       color: white;
       cursor: pointer;
-      box-shadow: 0 7px 0 rgba(20, 41, 120, 0.9), 0 12px 18px rgba(0,0,0,0.22);
+      background: linear-gradient(180deg, #5d7afc 0%, #2d5bd7 100%);
+      box-shadow: 0 7px 0 rgba(25, 40, 112, 0.9), 0 12px 18px rgba(0,0,0,0.22);
       transition: transform 0.12s ease, filter 0.12s ease;
     }
 
     .level-btn.active {
-      background: linear-gradient(180deg, #ff9b2f 0%, #ff6a00 100%);
-      box-shadow: 0 7px 0 rgba(125, 53, 7, 0.9), 0 12px 18px rgba(0,0,0,0.22);
-      transform: translateY(-1px);
+      background: linear-gradient(180deg, #ff9a30 0%, #ff6f0d 100%);
+      box-shadow: 0 7px 0 rgba(129, 59, 10, 0.9), 0 12px 18px rgba(0,0,0,0.22);
     }
 
     .level-btn:active {
       transform: translateY(2px);
-      box-shadow: 0 4px 0 rgba(125,53,7,0.9), 0 8px 14px rgba(0,0,0,0.18);
+      box-shadow: 0 4px 0 rgba(129, 59, 10, 0.9), 0 8px 14px rgba(0,0,0,0.18);
     }
 
-    .menu-buttons {
+    .menu-actions {
+      position: relative;
+      z-index: 1;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 14px;
-      margin-top: 4px;
-      position: relative;
-      z-index: 1;
+      margin-top: 8px;
     }
 
     .icon-btn {
@@ -275,38 +281,38 @@
       height: 54px;
       border: 0;
       border-radius: 50%;
-      font-size: 22px;
-      font-weight: 900;
       cursor: pointer;
+      background: linear-gradient(180deg, #ffb534 0%, #ff7d2a 100%);
       color: white;
-      background: linear-gradient(180deg, #ffb631 0%, #ff7d23 100%);
-      box-shadow: 0 6px 0 rgba(128, 63, 9, 0.9), 0 10px 18px rgba(0,0,0,0.2);
+      font-size: 24px;
+      font-weight: 900;
+      box-shadow: 0 6px 0 rgba(118, 55, 12, 0.9), 0 10px 18px rgba(0,0,0,0.2);
     }
 
     .icon-btn.secondary {
-      background: linear-gradient(180deg, #5c7dff 0%, #3d5ad9 100%);
-      box-shadow: 0 6px 0 rgba(23, 35, 96, 0.9), 0 10px 18px rgba(0,0,0,0.2);
+      background: linear-gradient(180deg, #6d81ff 0%, #3e55d2 100%);
+      box-shadow: 0 6px 0 rgba(19, 31, 98, 0.9), 0 10px 18px rgba(0,0,0,0.2);
     }
 
     .start-btn {
       min-width: 170px;
-      padding: 16px 22px;
       border: 0;
       border-radius: 14px;
-      font-size: 16px;
-      font-weight: 900;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      cursor: pointer;
+      padding: 16px 18px;
+      background: linear-gradient(180deg, #ff6ad1 0%, #d82be1 100%);
       color: white;
-      background: linear-gradient(180deg, #ff6bd7 0%, #d72ae5 100%);
-      box-shadow: 0 8px 0 rgba(121, 18, 145, 0.9), 0 16px 28px rgba(209, 46, 242, 0.26);
+      font-size: 15px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      box-shadow: 0 8px 0 rgba(120, 20, 143, 0.9), 0 16px 26px rgba(189, 48, 236, 0.26);
     }
 
-    .start-btn:active,
-    .icon-btn:active {
+    .icon-btn:active,
+    .start-btn:active {
       transform: translateY(2px);
-      box-shadow: 0 4px 0 rgba(121,18,145,0.9), 0 10px 16px rgba(209,46,242,0.2);
+      box-shadow: 0 4px 0 rgba(120, 20, 143, 0.9), 0 10px 16px rgba(189, 48, 236, 0.2);
     }
 
     .hidden { display: none !important; }
@@ -318,11 +324,29 @@
         border-radius: 0;
       }
 
-      .level-picker { grid-template-columns: 1fr; }
-      .controls-bar { bottom: 12px; left: 12px; right: 12px; }
-      .action-btn { min-width: 95px; min-height: 50px; }
-      .hud { top: 12px; left: 12px; right: 12px; }
-      .menu-card { width: min(92%, 520px); }
+      .menu-card {
+        width: min(90%, 540px);
+      }
+
+      .level-picker {
+        grid-template-columns: 1fr;
+      }
+
+      .controls-bar {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+      }
+
+      .action-btn {
+        min-width: 94px;
+      }
+
+      .hud {
+        left: 12px;
+        right: 12px;
+        top: 12px;
+      }
     }
   </style>
 </head>
@@ -344,14 +368,24 @@
 
     <div class="menu-overlay" id="menuOverlay">
       <div class="menu-card">
-        <div class="menu-head"><span class="orb"></span> Geometry <span class="orb"></span></div>
-        <h1>Geometric<br>Dash</h1>
-        <p class="subtext">Select a level + start</p>
+        <div class="menu-header">
+          <span class="dot"></span>
+          <span>Geometry</span>
+          <span class="dot"></span>
+        </div>
+
+        <div class="title-wrap">
+          <h1><span class="small">Geometric</span><br />Dash</h1>
+        </div>
+
+        <div class="subtext">Select a level + start</div>
+
         <div class="level-picker">
           <button class="level-btn active" data-level="0">Level 1</button>
           <button class="level-btn" data-level="1">Level 2</button>
         </div>
-        <div class="menu-buttons">
+
+        <div class="menu-actions">
           <button class="icon-btn" aria-label="play">▶</button>
           <button class="start-btn" id="startButton">Play</button>
           <button class="icon-btn secondary" aria-label="options">⚙</button>
@@ -363,6 +397,7 @@
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
+
     const levelName = document.getElementById('levelName');
     const statusText = document.getElementById('statusText');
     const menuOverlay = document.getElementById('menuOverlay');
@@ -370,8 +405,8 @@
     const jumpButton = document.getElementById('jumpButton');
     const pauseButton = document.getElementById('pauseButton');
 
-    const keys = {};
     const BASE_GRAVITY = 1750;
+    const keys = {};
 
     const levels = [
       {
@@ -382,14 +417,14 @@
         playerStartX: 120,
         playerStartY: 454 - 36,
         obstacles: [
-          { x: 520, y: 454, w: 46, h: 36, type: 'spike' },
-          { x: 720, y: 454, w: 34, h: 36, type: 'spike' },
-          { x: 885, y: 454, w: 54, h: 36, type: 'spike' },
-          { x: 1115, y: 454, w: 38, h: 36, type: 'spike' },
-          { x: 1280, y: 454, w: 78, h: 36, type: 'spike' },
-          { x: 1500, y: 454, w: 42, h: 36, type: 'spike' },
-          { x: 1680, y: 454, w: 52, h: 36, type: 'spike' },
-          { x: 1880, y: 454, w: 60, h: 36, type: 'spike' }
+          { x: 520, y: 454, w: 46, h: 36 },
+          { x: 720, y: 454, w: 34, h: 36 },
+          { x: 885, y: 454, w: 54, h: 36 },
+          { x: 1115, y: 454, w: 38, h: 36 },
+          { x: 1280, y: 454, w: 78, h: 36 },
+          { x: 1500, y: 454, w: 42, h: 36 },
+          { x: 1680, y: 454, w: 52, h: 36 },
+          { x: 1880, y: 454, w: 60, h: 36 }
         ]
       },
       {
@@ -400,16 +435,16 @@
         playerStartX: 120,
         playerStartY: 454 - 36,
         obstacles: [
-          { x: 470, y: 454, w: 36, h: 36, type: 'spike' },
-          { x: 640, y: 454, w: 48, h: 36, type: 'spike' },
-          { x: 820, y: 454, w: 36, h: 36, type: 'spike' },
-          { x: 960, y: 454, w: 74, h: 36, type: 'spike' },
-          { x: 1160, y: 454, w: 38, h: 36, type: 'spike' },
-          { x: 1350, y: 454, w: 58, h: 36, type: 'spike' },
-          { x: 1560, y: 454, w: 42, h: 36, type: 'spike' },
-          { x: 1740, y: 454, w: 90, h: 36, type: 'spike' },
-          { x: 1960, y: 454, w: 38, h: 36, type: 'spike' },
-          { x: 2160, y: 454, w: 62, h: 36, type: 'spike' }
+          { x: 470, y: 454, w: 36, h: 36 },
+          { x: 640, y: 454, w: 48, h: 36 },
+          { x: 820, y: 454, w: 36, h: 36 },
+          { x: 960, y: 454, w: 74, h: 36 },
+          { x: 1160, y: 454, w: 38, h: 36 },
+          { x: 1350, y: 454, w: 58, h: 36 },
+          { x: 1560, y: 454, w: 42, h: 36 },
+          { x: 1740, y: 454, w: 90, h: 36 },
+          { x: 1960, y: 454, w: 38, h: 36 },
+          { x: 2160, y: 454, w: 62, h: 36 }
         ]
       }
     ];
@@ -442,8 +477,8 @@
         game.stars.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height * 0.65,
-          r: Math.random() * 2.2 + 0.8,
-          a: Math.random() * 0.7 + 0.25
+          r: Math.random() * 2.1 + 0.8,
+          a: Math.random() * 0.7 + 0.2
         });
       }
     }
@@ -454,30 +489,29 @@
       player.y = level.playerStartY;
       player.vy = 0;
       player.onGround = true;
-      player.color = '#73f5ff';
     }
 
     function setStatus(msg) {
       statusText.textContent = msg;
     }
 
+    function updateLevelButtons() {
+      document.querySelectorAll('.level-btn').forEach((button) => {
+        button.classList.toggle('active', Number(button.dataset.level) === game.levelIndex);
+      });
+    }
+
     function setCurrentLevel(index) {
       game.levelIndex = index;
-      game.won = false;
-      game.lost = false;
       game.running = false;
       game.paused = false;
+      game.won = false;
+      game.lost = false;
       game.cameraX = 0;
       resetPlayer();
       levelName.textContent = levels[index].name;
       setStatus('Ready');
       updateLevelButtons();
-    }
-
-    function updateLevelButtons() {
-      document.querySelectorAll('.level-btn').forEach((button) => {
-        button.classList.toggle('active', Number(button.dataset.level) === game.levelIndex);
-      });
     }
 
     function startLevel() {
@@ -510,7 +544,7 @@
       game.lost = !win;
       setStatus(win ? 'Level Cleared' : 'Crashed');
       menuOverlay.classList.remove('hidden');
-      menuOverlay.querySelector('.subtext').textContent = win
+      document.querySelector('.subtext').textContent = win
         ? 'Nice run! Pick another level or replay.'
         : 'You hit a spike. Try again!';
       startButton.textContent = win ? 'Replay' : 'Play';
@@ -520,9 +554,8 @@
       if (!game.running || game.paused) return;
 
       const level = levels[game.levelIndex];
-      const speed = level.speed;
 
-      player.x += speed * dt;
+      player.x += level.speed * dt;
       player.vy += BASE_GRAVITY * dt;
       player.y += player.vy * dt;
 
@@ -552,7 +585,12 @@
     }
 
     function intersects(a, b) {
-      return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+      return (
+        a.x < b.x + b.w &&
+        a.x + a.w > b.x &&
+        a.y < b.y + b.h &&
+        a.y + a.h > b.y
+      );
     }
 
     function drawBackground() {
@@ -613,6 +651,7 @@
         const drawY = spike.y;
         const w = spike.w;
         const h = spike.h;
+
         ctx.beginPath();
         ctx.moveTo(drawX, drawY + h);
         for (let i = 0; i <= 4; i++) {
@@ -634,8 +673,9 @@
       ctx.translate(drawX + player.w / 2, drawY + player.h / 2);
       ctx.shadowColor = 'rgba(115,245,255,0.9)';
       ctx.shadowBlur = 18;
-      ctx.fillStyle = player.color;
+      ctx.fillStyle = '#73f5ff';
       ctx.fillRect(-player.w / 2, -player.h / 2, player.w, player.h);
+
       ctx.fillStyle = 'rgba(13,20,35,0.9)';
       ctx.fillRect(-player.w / 2 + 8, -player.h / 2 + 9, 8, 8);
       ctx.fillRect(player.w / 2 - 16, -player.h / 2 + 9, 8, 8);
@@ -644,7 +684,6 @@
 
     function draw() {
       drawBackground();
-
       const level = levels[game.levelIndex];
       drawGround(level);
       drawSpikes(level);
@@ -666,7 +705,6 @@
 
     document.addEventListener('keydown', (event) => {
       const key = event.key.toLowerCase();
-      keys[key] = true;
 
       if ([' ', 'arrowup', 'w'].includes(key)) {
         event.preventDefault();
@@ -684,10 +722,6 @@
       if (key === 'r') {
         startLevel();
       }
-    });
-
-    document.addEventListener('keyup', (event) => {
-      keys[event.key.toLowerCase()] = false;
     });
 
     canvas.addEventListener('pointerdown', () => {
