@@ -3,36 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Geometric Dash</title>
+  <title>Neon Dash</title>
   <style>
     :root {
-      --bg-dark: #0b0f1b;
-      --bg-mid: #171b2e;
-      --bg-panel: rgba(24, 8, 16, 0.9);
-      --panel-border: rgba(255,255,255,0.14);
-      --pink-1: #ff6bb7;
-      --pink-2: #ff4f95;
-      --red-1: #ff5d75;
-      --orange-1: #ffb26b;
-      --yellow-1: #ffeb8d;
-      --purple-1: #6346d8;
-      --purple-2: #3e2f9c;
-      --blue-1: #8bd8ff;
-      --blue-2: #4a8bff;
-      --text: #f6f3ff;
-      --shadow-dark: rgba(0, 0, 0, 0.45);
+      --bg-1: #090d1a;
+      --bg-2: #171b34;
+      --panel: rgba(15, 20, 35, 0.82);
+      --panel-border: rgba(255, 255, 255, 0.18);
+      --neon: #73f5ff;
+      --pink: #ff66d9;
+      --purple: #8d7dff;
+      --yellow: #ffd166;
+      --green: #6ef7a6;
+      --danger: #ff5d73;
+      --text: #eff7ff;
     }
 
     * { box-sizing: border-box; }
 
     html, body {
       margin: 0;
-      width: 100%;
       height: 100%;
-      overflow: hidden;
-      background: #000;
-      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
       color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      overflow: hidden;
     }
 
     body {
@@ -45,67 +40,125 @@
       position: relative;
       width: min(100vw, 1100px);
       height: min(100vh, 620px);
-      background: linear-gradient(180deg, #181a2d 0%, #0d1320 100%);
-      border: 4px solid rgba(255,255,255,0.15);
-      border-radius: 16px;
+      background: rgba(0, 0, 0, 0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 22px 60px rgba(0,0,0,0.45);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45), 0 0 25px rgba(115, 245, 255, 0.18);
     }
 
     canvas {
       display: block;
       width: 100%;
       height: 100%;
-      background: linear-gradient(180deg, #0e1a2f 0%, #171c34 34%, #1a0d25 100%);
+      background: linear-gradient(180deg, #0a1127 0%, #140d24 50%, #1a102d 100%);
       touch-action: none;
       user-select: none;
     }
 
     .hud {
       position: absolute;
+      top: 18px;
       left: 18px;
       right: 18px;
-      top: 18px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      z-index: 12;
+      justify-content: space-between;
+      gap: 12px;
       pointer-events: none;
+      z-index: 15;
     }
 
     .hud-card {
-      background: rgba(17, 18, 25, 0.68);
-      border: 2px solid rgba(255,255,255,0.12);
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
       border-radius: 12px;
-      padding: 10px 12px;
-      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.04);
+      padding: 10px 14px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      backdrop-filter: blur(5px);
     }
 
     .level-text {
-      color: #8bdcff;
-      font-weight: 900;
-      letter-spacing: 0.15em;
+      font-size: 14px;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      font-size: 12px;
+      color: var(--neon);
+      font-weight: 700;
     }
 
     .status-text {
-      color: #edf4ff;
-      font-weight: 800;
-      letter-spacing: 0.12em;
+      font-size: 13px;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      font-size: 11px;
+      color: #dfeaff;
+      font-weight: 700;
+    }
+
+    .progress-wrap {
+      position: absolute;
+      top: 62px;
+      left: 18px;
+      right: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    .progress-bar {
+      position: relative;
+      flex: 1;
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: inset 0 0 12px rgba(0,0,0,0.28);
+    }
+
+    .progress-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--green), var(--neon), var(--pink));
+      box-shadow: 0 0 12px rgba(115,245,255,0.55);
+    }
+
+    .progress-end {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #fff9b2, #ffd166);
+      border: 2px solid rgba(22, 31, 49, 0.8);
+      box-shadow: 0 0 20px rgba(255, 209, 102, 0.7);
+    }
+
+    .progress-percent {
+      min-width: 46px;
+      text-align: right;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
     }
 
     .controls-bar {
       position: absolute;
+      bottom: 18px;
       left: 18px;
       right: 18px;
-      bottom: 18px;
-      z-index: 12;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      z-index: 15;
       pointer-events: none;
     }
 
@@ -116,29 +169,34 @@
     }
 
     .action-btn {
-      border: 0;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(14, 18, 28, 0.7);
+      color: white;
       border-radius: 12px;
-      min-width: 108px;
+      min-width: 110px;
       min-height: 52px;
-      font-size: 14px;
-      font-weight: 900;
+      font-size: 15px;
+      font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       cursor: pointer;
-      color: white;
-      background: linear-gradient(180deg, #ffba45 0%, #ff7b2a 100%);
-      box-shadow: 0 8px 0 rgba(122, 54, 9, 0.9), 0 12px 18px rgba(0,0,0,0.24);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.22);
       transition: transform 0.12s ease, box-shadow 0.12s ease;
     }
 
-    .pause-btn {
-      background: linear-gradient(180deg, #7b7eff 0%, #485bdc 100%);
-      box-shadow: 0 8px 0 rgba(18, 31, 105, 0.9), 0 12px 18px rgba(0,0,0,0.24);
+    .action-btn:active {
+      transform: translateY(2px) scale(0.98);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.18);
     }
 
-    .action-btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 4px 0 rgba(122, 54, 9, 0.9), 0 7px 14px rgba(0,0,0,0.2);
+    .jump-btn {
+      background: linear-gradient(180deg, rgba(115,245,255,0.25), rgba(24,103,160,0.7));
+      border-color: rgba(115,245,255,0.6);
+    }
+
+    .pause-btn {
+      background: linear-gradient(180deg, rgba(255,102,217,0.20), rgba(128,50,117,0.7));
+      border-color: rgba(255,102,217,0.6);
     }
 
     .menu-overlay {
@@ -148,171 +206,76 @@
       align-items: center;
       justify-content: center;
       z-index: 20;
-      background: linear-gradient(180deg, rgba(17, 7, 12, 0.45), rgba(12, 11, 20, 0.7));
+      background: rgba(7, 10, 19, 0.52);
+      backdrop-filter: blur(4px);
     }
 
     .menu-card {
-      width: min(82%, 640px);
-      min-height: 360px;
-      padding: 18px 24px 16px;
+      width: min(90%, 620px);
+      padding: 24px 20px 18px;
       border-radius: 18px;
-      border: 4px solid rgba(255,255,255,0.12);
-      background: linear-gradient(180deg, rgba(47, 0, 18, 0.96), rgba(31, 7, 17, 0.96));
-      box-shadow: 0 22px 50px rgba(0,0,0,0.38), inset 0 0 0 2px rgba(255,255,255,0.04);
-      position: relative;
+      background: rgba(13, 16, 28, 0.82);
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.38);
       text-align: center;
     }
 
-    .menu-card::before {
-      content: "";
-      position: absolute;
-      inset: 12px;
-      border-radius: 14px;
-      border: 2px solid rgba(255,255,255,0.08);
-      pointer-events: none;
-    }
-
-    .menu-header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin: 8px 0 10px;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      font-weight: 900;
-      color: rgba(255,255,255,0.88);
-    }
-
-    .menu-header .dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: linear-gradient(180deg, #ffe273 0%, #ffcb42 100%);
-      box-shadow: 0 0 12px rgba(255, 198, 60, 0.7);
-    }
-
-    .title-wrap {
-      position: relative;
-      z-index: 1;
-      margin-top: 4px;
-      margin-bottom: 6px;
-    }
-
-    .title-wrap h1 {
-      margin: 0;
-      font-size: clamp(2.2rem, 5vw, 4.2rem);
-      line-height: 0.9;
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2.2rem, 4vw, 4rem);
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      font-weight: 900;
-      color: #ffedf8;
-      text-shadow:
-        0 4px 0 #7b0d39,
-        0 8px 0 #4c061a,
-        0 18px 24px rgba(255, 90, 126, 0.35);
-      background: linear-gradient(180deg, #ffd9e9 0%, #ff8db3 18%, #ff6997 36%, #ff7e6f 58%, #ffb061 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .title-wrap .small {
-      letter-spacing: 0.19em;
+      color: var(--neon);
+      text-shadow: 0 0 18px rgba(115,245,255,0.65);
     }
 
     .subtext {
-      margin: 8px 0 20px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: rgba(255,255,255,0.75);
-      font-weight: 700;
+      margin: 0 0 24px;
+      color: #edf4ff;
+      opacity: 0.82;
+      letter-spacing: 0.04em;
     }
 
     .level-picker {
-      position: relative;
-      z-index: 1;
       display: grid;
       grid-template-columns: repeat(2, minmax(160px, 1fr));
       gap: 12px;
-      max-width: 420px;
-      margin: 0 auto 18px;
+      margin-bottom: 18px;
     }
 
     .level-btn {
-      border: 0;
+      border: 1px solid rgba(255,255,255,0.12);
       border-radius: 12px;
-      padding: 14px 12px;
-      font-size: 14px;
-      letter-spacing: 0.12em;
+      background: rgba(255,255,255,0.04);
+      padding: 16px 10px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      font-weight: 900;
-      color: white;
+      color: var(--text);
       cursor: pointer;
-      background: linear-gradient(180deg, #5d7afc 0%, #2d5bd7 100%);
-      box-shadow: 0 7px 0 rgba(25, 40, 112, 0.9), 0 12px 18px rgba(0,0,0,0.22);
-      transition: transform 0.12s ease, filter 0.12s ease;
+      transition: all 0.15s ease;
     }
 
     .level-btn.active {
-      background: linear-gradient(180deg, #ff9a30 0%, #ff6f0d 100%);
-      box-shadow: 0 7px 0 rgba(129, 59, 10, 0.9), 0 12px 18px rgba(0,0,0,0.22);
-    }
-
-    .level-btn:active {
-      transform: translateY(2px);
-      box-shadow: 0 4px 0 rgba(129, 59, 10, 0.9), 0 8px 14px rgba(0,0,0,0.18);
-    }
-
-    .menu-actions {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      margin-top: 8px;
-    }
-
-    .icon-btn {
-      width: 54px;
-      height: 54px;
-      border: 0;
-      border-radius: 50%;
-      cursor: pointer;
-      background: linear-gradient(180deg, #ffb534 0%, #ff7d2a 100%);
-      color: white;
-      font-size: 24px;
-      font-weight: 900;
-      box-shadow: 0 6px 0 rgba(118, 55, 12, 0.9), 0 10px 18px rgba(0,0,0,0.2);
-    }
-
-    .icon-btn.secondary {
-      background: linear-gradient(180deg, #6d81ff 0%, #3e55d2 100%);
-      box-shadow: 0 6px 0 rgba(19, 31, 98, 0.9), 0 10px 18px rgba(0,0,0,0.2);
+      background: linear-gradient(180deg, rgba(115,245,255,0.32), rgba(98,118,255,0.28));
+      border-color: rgba(115,245,255,0.7);
+      box-shadow: 0 0 18px rgba(115,245,255,0.22);
     }
 
     .start-btn {
-      min-width: 170px;
+      min-width: 180px;
+      padding: 14px 24px;
       border: 0;
-      border-radius: 14px;
-      padding: 16px 18px;
-      background: linear-gradient(180deg, #ff6ad1 0%, #d82be1 100%);
-      color: white;
+      border-radius: 12px;
       font-size: 15px;
-      font-weight: 900;
+      font-weight: 800;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
       cursor: pointer;
-      box-shadow: 0 8px 0 rgba(120, 20, 143, 0.9), 0 16px 26px rgba(189, 48, 236, 0.26);
-    }
-
-    .icon-btn:active,
-    .start-btn:active {
-      transform: translateY(2px);
-      box-shadow: 0 4px 0 rgba(120, 20, 143, 0.9), 0 10px 16px rgba(189, 48, 236, 0.2);
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      color: white;
+      box-shadow: 0 12px 28px rgba(255, 102, 217, 0.32);
     }
 
     .hidden { display: none !important; }
@@ -324,29 +287,16 @@
         border-radius: 0;
       }
 
-      .menu-card {
-        width: min(90%, 540px);
-      }
-
-      .level-picker {
-        grid-template-columns: 1fr;
-      }
-
-      .controls-bar {
+      .progress-wrap {
+        top: 58px;
         left: 12px;
         right: 12px;
-        bottom: 12px;
       }
 
-      .action-btn {
-        min-width: 94px;
-      }
-
-      .hud {
-        left: 12px;
-        right: 12px;
-        top: 12px;
-      }
+      .level-picker { grid-template-columns: 1fr; }
+      .controls-bar { bottom: 12px; left: 12px; right: 12px; }
+      .action-btn { min-width: 92px; min-height: 50px; }
+      .hud { top: 12px; left: 12px; right: 12px; }
     }
   </style>
 </head>
@@ -355,6 +305,14 @@
     <div class="hud">
       <div class="hud-card level-text" id="levelName">Level 1</div>
       <div class="hud-card status-text" id="statusText">Ready</div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-end" id="progressEnd"></div>
+      </div>
+      <div class="progress-percent" id="progressPercent">0%</div>
     </div>
 
     <canvas id="gameCanvas" width="1100" height="620"></canvas>
@@ -368,28 +326,13 @@
 
     <div class="menu-overlay" id="menuOverlay">
       <div class="menu-card">
-        <div class="menu-header">
-          <span class="dot"></span>
-          <span>Geometry</span>
-          <span class="dot"></span>
-        </div>
-
-        <div class="title-wrap">
-          <h1><span class="small">Geometric</span><br />Dash</h1>
-        </div>
-
-        <div class="subtext">Select a level + start</div>
-
+        <h1>Neon Dash</h1>
+        <p class="subtext">Jump, dodge, and blast through 2 neon stages. Keyboard or touch controls.</p>
         <div class="level-picker">
           <button class="level-btn active" data-level="0">Level 1</button>
           <button class="level-btn" data-level="1">Level 2</button>
         </div>
-
-        <div class="menu-actions">
-          <button class="icon-btn" aria-label="play">▶</button>
-          <button class="start-btn" id="startButton">Play</button>
-          <button class="icon-btn secondary" aria-label="options">⚙</button>
-        </div>
+        <button class="start-btn" id="startButton">Start Run</button>
       </div>
     </div>
   </div>
@@ -397,54 +340,84 @@
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-
     const levelName = document.getElementById('levelName');
     const statusText = document.getElementById('statusText');
     const menuOverlay = document.getElementById('menuOverlay');
     const startButton = document.getElementById('startButton');
     const jumpButton = document.getElementById('jumpButton');
     const pauseButton = document.getElementById('pauseButton');
+    const progressFill = document.getElementById('progressFill');
+    const progressEnd = document.getElementById('progressEnd');
+    const progressPercent = document.getElementById('progressPercent');
 
-    const BASE_GRAVITY = 1750;
     const keys = {};
+    const BASE_GRAVITY = 1750;
 
     const levels = [
       {
         name: 'Level 1: Skyline Rush',
         speed: 360,
         groundY: 454,
-        endX: 2100,
+        endX: 2200,
         playerStartX: 120,
         playerStartY: 454 - 36,
+        shipZone: { startX: 1500, endX: 1920 },
+        platforms: [
+          { x: 340, y: 360, w: 140, h: 18 },
+          { x: 760, y: 330, w: 150, h: 18 },
+          { x: 1200, y: 295, w: 170, h: 18 },
+          { x: 1760, y: 340, w: 180, h: 18 }
+        ],
+        jumpOrbs: [
+          { x: 610, y: 420, r: 16, force: 760, cooldown: 0 },
+          { x: 1000, y: 392, r: 18, force: 800, cooldown: 0 },
+          { x: 1660, y: 400, r: 18, force: 860, cooldown: 0 }
+        ],
         obstacles: [
-          { x: 520, y: 454, w: 46, h: 36 },
-          { x: 720, y: 454, w: 34, h: 36 },
-          { x: 885, y: 454, w: 54, h: 36 },
-          { x: 1115, y: 454, w: 38, h: 36 },
-          { x: 1280, y: 454, w: 78, h: 36 },
-          { x: 1500, y: 454, w: 42, h: 36 },
-          { x: 1680, y: 454, w: 52, h: 36 },
-          { x: 1880, y: 454, w: 60, h: 36 }
+          { x: 520, y: 454, w: 46, h: 36, type: 'spike' },
+          { x: 720, y: 454, w: 34, h: 36, type: 'spike' },
+          { x: 885, y: 454, w: 54, h: 36, type: 'spike' },
+          { x: 1115, y: 454, w: 38, h: 36, type: 'spike' },
+          { x: 1280, y: 454, w: 78, h: 36, type: 'spike' },
+          { x: 1500, y: 454, w: 42, h: 36, type: 'spike' },
+          { x: 1680, y: 454, w: 52, h: 36, type: 'spike' },
+          { x: 1880, y: 454, w: 60, h: 36, type: 'spike' },
+          { x: 2060, y: 454, w: 70, h: 36, type: 'spike' }
         ]
       },
       {
         name: 'Level 2: Neon Pulse',
         speed: 410,
         groundY: 454,
-        endX: 2400,
+        endX: 2500,
         playerStartX: 120,
         playerStartY: 454 - 36,
+        shipZone: { startX: 1680, endX: 2140 },
+        platforms: [
+          { x: 270, y: 380, w: 120, h: 18 },
+          { x: 660, y: 340, w: 150, h: 18 },
+          { x: 980, y: 300, w: 150, h: 18 },
+          { x: 1380, y: 330, w: 150, h: 18 },
+          { x: 1960, y: 360, w: 170, h: 18 }
+        ],
+        jumpOrbs: [
+          { x: 470, y: 420, r: 16, force: 780, cooldown: 0 },
+          { x: 860, y: 388, r: 18, force: 820, cooldown: 0 },
+          { x: 1220, y: 374, r: 18, force: 840, cooldown: 0 },
+          { x: 1850, y: 410, r: 20, force: 900, cooldown: 0 }
+        ],
         obstacles: [
-          { x: 470, y: 454, w: 36, h: 36 },
-          { x: 640, y: 454, w: 48, h: 36 },
-          { x: 820, y: 454, w: 36, h: 36 },
-          { x: 960, y: 454, w: 74, h: 36 },
-          { x: 1160, y: 454, w: 38, h: 36 },
-          { x: 1350, y: 454, w: 58, h: 36 },
-          { x: 1560, y: 454, w: 42, h: 36 },
-          { x: 1740, y: 454, w: 90, h: 36 },
-          { x: 1960, y: 454, w: 38, h: 36 },
-          { x: 2160, y: 454, w: 62, h: 36 }
+          { x: 470, y: 454, w: 36, h: 36, type: 'spike' },
+          { x: 640, y: 454, w: 48, h: 36, type: 'spike' },
+          { x: 820, y: 454, w: 36, h: 36, type: 'spike' },
+          { x: 960, y: 454, w: 74, h: 36, type: 'spike' },
+          { x: 1160, y: 454, w: 38, h: 36, type: 'spike' },
+          { x: 1350, y: 454, w: 58, h: 36, type: 'spike' },
+          { x: 1560, y: 454, w: 42, h: 36, type: 'spike' },
+          { x: 1740, y: 454, w: 90, h: 36, type: 'spike' },
+          { x: 1960, y: 454, w: 38, h: 36, type: 'spike' },
+          { x: 2160, y: 454, w: 62, h: 36, type: 'spike' },
+          { x: 2330, y: 454, w: 80, h: 36, type: 'spike' }
         ]
       }
     ];
@@ -457,7 +430,8 @@
       lost: false,
       lastTime: 0,
       cameraX: 0,
-      stars: []
+      stars: [],
+      shipMode: false
     };
 
     const player = {
@@ -477,8 +451,8 @@
         game.stars.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height * 0.65,
-          r: Math.random() * 2.1 + 0.8,
-          a: Math.random() * 0.7 + 0.2
+          r: Math.random() * 2.2 + 0.8,
+          a: Math.random() * 0.7 + 0.25
         });
       }
     }
@@ -489,29 +463,41 @@
       player.y = level.playerStartY;
       player.vy = 0;
       player.onGround = true;
+      player.color = '#73f5ff';
+      game.shipMode = false;
     }
 
     function setStatus(msg) {
       statusText.textContent = msg;
     }
 
-    function updateLevelButtons() {
-      document.querySelectorAll('.level-btn').forEach((button) => {
-        button.classList.toggle('active', Number(button.dataset.level) === game.levelIndex);
-      });
+    function updateProgress() {
+      const level = levels[game.levelIndex];
+      const progress = Math.min(1, Math.max(0, player.x / level.endX));
+      const percent = progress * 100;
+      progressFill.style.width = `${percent}%`;
+      progressEnd.style.left = `${Math.min(100, Math.max(0, percent))}%`;
+      progressPercent.textContent = `${Math.round(percent)}%`;
     }
 
     function setCurrentLevel(index) {
       game.levelIndex = index;
-      game.running = false;
-      game.paused = false;
       game.won = false;
       game.lost = false;
+      game.running = false;
+      game.paused = false;
       game.cameraX = 0;
       resetPlayer();
       levelName.textContent = levels[index].name;
       setStatus('Ready');
       updateLevelButtons();
+      updateProgress();
+    }
+
+    function updateLevelButtons() {
+      document.querySelectorAll('.level-btn').forEach((button) => {
+        button.classList.toggle('active', Number(button.dataset.level) === game.levelIndex);
+      });
     }
 
     function startLevel() {
@@ -522,6 +508,7 @@
       game.lost = false;
       menuOverlay.classList.add('hidden');
       setStatus('Running');
+      updateProgress();
     }
 
     function togglePause() {
@@ -532,6 +519,12 @@
 
     function jump() {
       if (!game.running || game.paused) return;
+
+      if (game.shipMode) {
+        player.vy = -420;
+        return;
+      }
+
       if (player.onGround) {
         player.vy = -player.jumpForce;
         player.onGround = false;
@@ -544,31 +537,107 @@
       game.lost = !win;
       setStatus(win ? 'Level Cleared' : 'Crashed');
       menuOverlay.classList.remove('hidden');
-      document.querySelector('.subtext').textContent = win
+      menuOverlay.querySelector('.subtext').textContent = win
         ? 'Nice run! Pick another level or replay.'
         : 'You hit a spike. Try again!';
-      startButton.textContent = win ? 'Replay' : 'Play';
+      startButton.textContent = win ? 'Replay' : 'Retry';
+      updateProgress();
+    }
+
+    function intersects(a, b) {
+      return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+    }
+
+    function intersectsCircleRect(circle, rect) {
+      const closestX = Math.max(rect.x, Math.min(circle.x, rect.x + rect.w));
+      const closestY = Math.max(rect.y, Math.min(circle.y, rect.y + rect.h));
+      const dx = circle.x - closestX;
+      const dy = circle.y - closestY;
+      return dx * dx + dy * dy < circle.r * circle.r;
     }
 
     function update(dt) {
       if (!game.running || game.paused) return;
 
       const level = levels[game.levelIndex];
+      const prevY = player.y;
+      const shipZone = level.shipZone;
+      game.shipMode = Boolean(shipZone && player.x >= shipZone.startX && player.x <= shipZone.endX);
 
-      player.x += level.speed * dt;
-      player.vy += BASE_GRAVITY * dt;
-      player.y += player.vy * dt;
+      if (game.shipMode) {
+        const liftInput = keys[' '] || keys['arrowup'] || keys['w'];
+        player.vy += 520 * dt;
+        if (liftInput) {
+          player.vy -= 980 * dt;
+        }
+        player.y += player.vy * dt;
 
-      const groundY = level.groundY;
-      if (player.y + player.h >= groundY) {
-        player.y = groundY - player.h;
-        player.vy = 0;
-        player.onGround = true;
+        if (player.y < 18) {
+          player.y = 18;
+          player.vy = Math.max(player.vy, 0);
+        }
+
+        if (player.y + player.h > level.groundY - 18) {
+          player.y = level.groundY - player.h - 18;
+          endRun(false);
+          return;
+        }
       } else {
-        player.onGround = false;
+        player.x += level.speed * dt;
+        player.vy += BASE_GRAVITY * dt;
+        player.y += player.vy * dt;
+
+        const groundY = level.groundY;
+        let landed = false;
+
+        for (const platform of level.platforms) {
+          const withinX = player.x + player.w > platform.x && player.x < platform.x + platform.w;
+          const onTop = prevY + player.h <= platform.y + 4 && player.y + player.h >= platform.y;
+          if (withinX && onTop && player.vy >= 0) {
+            player.y = platform.y - player.h;
+            player.vy = 0;
+            player.onGround = true;
+            landed = true;
+            break;
+          }
+        }
+
+        if (player.y + player.h >= groundY) {
+          player.y = groundY - player.h;
+          player.vy = 0;
+          player.onGround = true;
+          landed = true;
+        } else if (!landed) {
+          player.onGround = false;
+        }
       }
 
-      game.cameraX = Math.max(0, player.x - 180);
+      for (const orb of level.jumpOrbs) {
+        orb.cooldown = Math.max(0, orb.cooldown - dt);
+      }
+
+      for (const orb of level.jumpOrbs) {
+        const orbCenterX = orb.x;
+        const orbCenterY = orb.y;
+        const playerCenterX = player.x + player.w / 2;
+        const playerCenterY = player.y + player.h / 2;
+        const dx = Math.abs(playerCenterX - orbCenterX);
+        const dy = Math.abs(playerCenterY - orbCenterY);
+        const touched = dx < orb.r + player.w / 2 && dy < orb.r + player.h / 2 && orb.cooldown <= 0;
+
+        if (touched) {
+          player.vy = -orb.force;
+          player.onGround = false;
+          player.y = orb.y - orb.r - player.h - 4;
+          orb.cooldown = 0.4;
+        }
+      }
+
+      if (!game.shipMode) {
+        game.cameraX = Math.max(0, player.x - 180);
+      } else {
+        game.cameraX = Math.max(0, player.x - 180);
+      }
 
       for (const spike of level.obstacles) {
         const rectA = { x: player.x, y: player.y, w: player.w, h: player.h };
@@ -581,16 +650,10 @@
 
       if (player.x >= level.endX) {
         endRun(true);
+        return;
       }
-    }
 
-    function intersects(a, b) {
-      return (
-        a.x < b.x + b.w &&
-        a.x + a.w > b.x &&
-        a.y < b.y + b.h &&
-        a.y + a.h > b.y
-      );
+      updateProgress();
     }
 
     function drawBackground() {
@@ -644,6 +707,38 @@
       ctx.fillRect(level.endX - game.cameraX, y - 100, 90, 10);
     }
 
+    function drawPlatforms(level) {
+      for (const platform of level.platforms) {
+        const x = platform.x - game.cameraX;
+        const y = platform.y;
+        ctx.fillStyle = 'rgba(115,245,255,0.22)';
+        ctx.fillRect(x, y, platform.w, platform.h);
+        ctx.strokeStyle = 'rgba(115,245,255,0.9)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, platform.w, platform.h);
+      }
+    }
+
+    function drawJumpOrbs(level) {
+      for (const orb of level.jumpOrbs) {
+        const x = orb.x - game.cameraX;
+        const y = orb.y;
+
+        ctx.beginPath();
+        ctx.arc(x, y, orb.r, 0, Math.PI * 2);
+        ctx.fillStyle = orb.cooldown > 0 ? 'rgba(255,209,102,0.45)' : 'rgba(255, 209, 102, 0.95)';
+        ctx.shadowColor = 'rgba(255,209,102,0.8)';
+        ctx.shadowBlur = 18;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.beginPath();
+        ctx.arc(x, y, orb.r * 0.5, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.fill();
+      }
+    }
+
     function drawSpikes(level) {
       ctx.fillStyle = '#ff5d73';
       for (const spike of level.obstacles) {
@@ -651,7 +746,6 @@
         const drawY = spike.y;
         const w = spike.w;
         const h = spike.h;
-
         ctx.beginPath();
         ctx.moveTo(drawX, drawY + h);
         for (let i = 0; i <= 4; i++) {
@@ -665,15 +759,26 @@
       }
     }
 
+    function drawShipMode() {
+      if (!game.shipMode) return;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(115,245,255,0.8)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([8, 10]);
+      ctx.strokeRect(0, 18, canvas.width, levels[game.levelIndex].groundY - 18);
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+
     function drawPlayer() {
       const drawX = player.x - game.cameraX;
       const drawY = player.y;
 
       ctx.save();
       ctx.translate(drawX + player.w / 2, drawY + player.h / 2);
-      ctx.shadowColor = 'rgba(115,245,255,0.9)';
+      ctx.shadowColor = game.shipMode ? 'rgba(255,102,217,0.9)' : 'rgba(115,245,255,0.9)';
       ctx.shadowBlur = 18;
-      ctx.fillStyle = '#73f5ff';
+      ctx.fillStyle = game.shipMode ? '#ff66d9' : player.color;
       ctx.fillRect(-player.w / 2, -player.h / 2, player.w, player.h);
 
       ctx.fillStyle = 'rgba(13,20,35,0.9)';
@@ -684,9 +789,13 @@
 
     function draw() {
       drawBackground();
+
       const level = levels[game.levelIndex];
       drawGround(level);
+      drawPlatforms(level);
+      drawJumpOrbs(level);
       drawSpikes(level);
+      drawShipMode();
       drawPlayer();
 
       if (!game.running && !game.won && !game.lost) {
@@ -705,6 +814,7 @@
 
     document.addEventListener('keydown', (event) => {
       const key = event.key.toLowerCase();
+      keys[key] = true;
 
       if ([' ', 'arrowup', 'w'].includes(key)) {
         event.preventDefault();
@@ -722,6 +832,10 @@
       if (key === 'r') {
         startLevel();
       }
+    });
+
+    document.addEventListener('keyup', (event) => {
+      keys[event.key.toLowerCase()] = false;
     });
 
     canvas.addEventListener('pointerdown', () => {
