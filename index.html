@@ -1,1 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Neon Dash</title>
+  <style>
+    :root {
+      --bg-1: #090d1a;
+      --bg-2: #171b34;
+      --panel: rgba(15, 20, 35, 0.82);
+      --panel-border: rgba(255, 255, 255, 0.18);
+      --neon: #73f5ff;
+      --pink: #ff66d9;
+      --purple: #8d7dff;
+      --yellow: #ffd166;
+      --green: #6ef7a6;
+      --danger: #ff5d73;
+      --text: #eff7ff;
+    }
 
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #game-shell {
+      position: relative;
+      width: min(100vw, 1100px);
+      height: min(100vh, 620px);
+      background: rgba(0, 0, 0, 0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45), 0 0 25px rgba(115, 245, 255, 0.18);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #0a1127 0%, #140d24 50%, #1a102d 100%);
+      touch-action: none;
+      user-select: none;
+    }
+
+    .hud {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      right: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    .hud-card {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .level-text {
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--neon);
+      font-weight: 700;
+    }
+
+    .status-text {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #dfeaff;
+      font-weight: 700;
+    }
+
+    .controls-bar {
+      position: absolute;
+      bottom: 18px;
+      left: 18px;
+      right: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    .touch-buttons {
+      display: flex;
+      gap: 12px;
+      pointer-events: auto;
+    }
+
+    .action-btn {
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(14, 18, 28, 0.7);
+      color: white;
+      border-radius: 12px;
+      min-width: 110px;
+      min-height: 52px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.22);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    .action-btn:active {
+      transform: translateY(2px) scale(0.98);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+    }
+
+    .jump-btn {
+      background: linear-gradient(180deg, rgba(115,245,255,0.25), rgba(24,103,160,0.7));
+      border-color: rgba(115,245,255,0.6);
+    }
+
+    .pause-btn {
+      background: linear-gradient(180deg, rgba(255,102,217,0.20), rgba(128,50,117,0.7));
+      border-color: rgba(255,102,217,0.6);
+    }
+
+    .menu-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      background: rgba(7, 10, 19, 0.52);
+      backdrop-filter: blur(4px);
+    }
+
+    .menu-card {
+      width: min(90%, 620px);
+      padding: 24px 20px 18px;
+      border-radius: 18px;
+      background: rgba(13, 16, 28, 0.82);
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.38);
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--neon);
+      text-shadow: 0 0 18px rgba(115,245,255,0.65);
+    }
+
+    .subtext {
+      margin: 0 0 24px;
+      color: #edf4ff;
+      opacity: 0.82;
+      letter-spacing: 0.04em;
+    }
+
+    .level-picker {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .level-btn {
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      padding: 16px 10px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .level-btn.active {
+      background: linear-gradient(180deg, rgba(115,245,255,0.32), rgba(98,118,255,0.28));
+      border-color: rgba(115,245,255,0.7);
+      box-shadow: 0 0 18px rgba(115,245,255,0.22);
+    }
+
+    .start-btn {
+      min-width: 180px;
+      padding: 14px 24px;
+      border: 0;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      color: white;
+      box-shadow: 0 12px 28px rgba(255, 102, 217, 0.32);
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 780px) {
+      #game-shell {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+      }
+
+      .level-picker { grid-template-columns: 1fr; }
+      .controls-bar { bottom: 12px; left: 12px; right: 12px; }
+      .action-btn { min-width: 92px; min-height: 50px; }
+      .hud { top: 12px; left: 12px; right: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-shell">
+    <div class="hud">
+      <div class="hud-card level-text" id="levelName">Level 1</div>
+      <div class="hud-card status-text" id="statusText">Ready</div>
+    </div>
+
+    <canvas id="gameCanvas" width="1100" height="620"></canvas>
+
+    <div class="controls-bar">
+      <div class="touch-buttons">
+        <button class="action-btn jump-btn" id="jumpButton">Jump</button>
+        <button class="action-btn pause-btn" id="pauseButton">Pause</button>
+      </div>
+    </div>
+
+    <div class="menu-overlay" id="menuOverlay">
+      <div class="menu-card">
+        <h1>Neon Dash</h1>
+        <p class="subtext">Jump, dodge, and blast through 2 neon stages. Keyboard or touch controls.</p>
+        <div class="level-picker">
+          <button class="level-btn active" data-level="0">Level 1</button>
+          <button class="level-btn" data-level="1">Level 2</button>
+        </div>
+        <button class="start-btn" id="startButton">Start Run</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const levelName = document.getElementById('levelName');
+    const statusText = document.getElementById('statusText');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const startButton = document.getElementById('startButton');
+    const jumpButton = document.getElementById('jumpButton');
+    const pauseButton = document.getElementById('pauseButton');
+
+    const keys = {};
+    const BASE_GRAVITY = 1750;
+
+    const levels = [
+      {
+        name: 'Level 1: Skyline Rush',
+        speed: 360,
+        groundY: 454,
+        endX: 2100,
+        playerStartX: 120,
+        playerStartY: 454 - 36,
+        obstacles: [
+          { x: 520, y: 454, w: 46, h: 36, type: 'spike' },
+          { x: 720, y: 454, w: 34, h: 36, type: 'spike' },
+          { x: 885, y: 454, w: 54, h: 36, type: 'spike' },
+          { x: 1115, y: 454, w: 38, h: 36, type: 'spike' },
+          { x: 1280, y: 454, w: 78, h: 36, type: 'spike' },
+          { x: 1500, y: 454, w: 42, h: 36, type: 'spike' },
+          { x: 1680, y: 454, w: 52, h: 36, type: 'spike' },
+          { x: 1880, y: 454, w: 60, h: 36, type: 'spike' }
+        ]
+      },
+      {
+        name: 'Level 2: Neon Pulse',
+        speed: 410,
+        groundY: 454,
+        endX: 2400,
+        playerStartX: 120,
+        playerStartY: 454 - 36,
+        obstacles: [
+          { x: 470, y: 454, w: 36, h: 36, type: 'spike' },
+          { x: 640, y: 454, w: 48, h: 36, type: 'spike' },
+          { x: 820, y: 454, w: 36, h: 36, type: 'spike' },
+          { x: 960, y: 454, w: 74, h: 36, type: 'spike' },
+          { x: 1160, y: 454, w: 38, h: 36, type: 'spike' },
+          { x: 1350, y: 454, w: 58, h: 36, type: 'spike' },
+          { x: 1560, y: 454, w: 42, h: 36, type: 'spike' },
+          { x: 1740, y: 454, w: 90, h: 36, type: 'spike' },
+          { x: 1960, y: 454, w: 38, h: 36, type: 'spike' },
+          { x: 2160, y: 454, w: 62, h: 36, type: 'spike' }
+        ]
+      }
+    ];
+
+    const game = {
+      levelIndex: 0,
+      running: false,
+      paused: false,
+      won: false,
+      lost: false,
+      lastTime: 0,
+      cameraX: 0,
+      stars: []
+    };
+
+    const player = {
+      x: 120,
+      y: 454 - 36,
+      w: 36,
+      h: 36,
+      vy: 0,
+      jumpForce: 690,
+      onGround: true,
+      color: '#73f5ff'
+    };
+
+    function initStars() {
+      game.stars = [];
+      for (let i = 0; i < 90; i++) {
+        game.stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height * 0.65,
+          r: Math.random() * 2.2 + 0.8,
+          a: Math.random() * 0.7 + 0.25
+        });
+      }
+    }
+
+    function resetPlayer() {
+      const level = levels[game.levelIndex];
+      player.x = level.playerStartX;
+      player.y = level.playerStartY;
+      player.vy = 0;
+      player.onGround = true;
+      player.color = '#73f5ff';
+    }
+
+    function setStatus(msg) {
+      statusText.textContent = msg;
+    }
+
+    function setCurrentLevel(index) {
+      game.levelIndex = index;
+      game.won = false;
+      game.lost = false;
+      game.running = false;
+      game.paused = false;
+      game.cameraX = 0;
+      resetPlayer();
+      levelName.textContent = levels[index].name;
+      setStatus('Ready');
+      updateLevelButtons();
+    }
+
+    function updateLevelButtons() {
+      document.querySelectorAll('.level-btn').forEach((button) => {
+        button.classList.toggle('active', Number(button.dataset.level) === game.levelIndex);
+      });
+    }
+
+    function startLevel() {
+      resetPlayer();
+      game.running = true;
+      game.paused = false;
+      game.won = false;
+      game.lost = false;
+      menuOverlay.classList.add('hidden');
+      setStatus('Running');
+    }
+
+    function togglePause() {
+      if (!game.running || game.won || game.lost) return;
+      game.paused = !game.paused;
+      setStatus(game.paused ? 'Paused' : 'Running');
+    }
+
+    function jump() {
+      if (!game.running || game.paused) return;
+      if (player.onGround) {
+        player.vy = -player.jumpForce;
+        player.onGround = false;
+      }
+    }
+
+    function endRun(win) {
+      game.running = false;
+      game.won = win;
+      game.lost = !win;
+      setStatus(win ? 'Level Cleared' : 'Crashed');
+      menuOverlay.classList.remove('hidden');
+      menuOverlay.querySelector('.subtext').textContent = win
+        ? 'Nice run! Pick another level or replay.'
+        : 'You hit a spike. Try again!';
+      startButton.textContent = win ? 'Replay' : 'Retry';
+    }
+
+    function update(dt) {
+      if (!game.running || game.paused) return;
+
+      const level = levels[game.levelIndex];
+      const speed = level.speed;
+
+      player.x += speed * dt;
+      player.vy += BASE_GRAVITY * dt;
+      player.y += player.vy * dt;
+
+      const groundY = level.groundY;
+      if (player.y + player.h >= groundY) {
+        player.y = groundY - player.h;
+        player.vy = 0;
+        player.onGround = true;
+      } else {
+        player.onGround = false;
+      }
+
+      game.cameraX = Math.max(0, player.x - 180);
+
+      for (const spike of level.obstacles) {
+        const rectA = { x: player.x, y: player.y, w: player.w, h: player.h };
+        const rectB = { x: spike.x, y: spike.y, w: spike.w, h: spike.h };
+        if (intersects(rectA, rectB)) {
+          endRun(false);
+          return;
+        }
+      }
+
+      if (player.x >= level.endX) {
+        endRun(true);
+      }
+    }
+
+    function intersects(a, b) {
+      return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+    }
+
+    function drawBackground() {
+      const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      sky.addColorStop(0, '#101a30');
+      sky.addColorStop(0.5, '#150d27');
+      sky.addColorStop(1, '#1d1237');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      for (const star of game.stars) {
+        ctx.fillStyle = `rgba(255,255,255,${star.a})`;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = 'rgba(115,245,255,0.08)';
+      for (let i = 0; i < 14; i++) {
+        const x = (i * 120) - (game.cameraX * 0.4 % 120);
+        ctx.fillRect(x, 320, 70, 160);
+      }
+
+      ctx.fillStyle = 'rgba(255,102,217,0.06)';
+      for (let i = 0; i < 10; i++) {
+        const x = (i * 150) - (game.cameraX * 0.25 % 150);
+        ctx.fillRect(x + 20, 250, 80, 200);
+      }
+    }
+
+    function drawGround(level) {
+      const y = level.groundY;
+      ctx.fillStyle = '#121827';
+      ctx.fillRect(0, y, canvas.width, canvas.height - y);
+
+      for (let x = -((game.cameraX * 0.9) % 44); x < canvas.width + 50; x += 44) {
+        ctx.fillStyle = 'rgba(115,245,255,0.12)';
+        ctx.fillRect(x, y, 18, 18);
+      }
+
+      ctx.strokeStyle = 'rgba(115,245,255,0.6)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, y + 2);
+      ctx.lineTo(canvas.width, y + 2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#73f5ff';
+      ctx.fillRect(level.endX - game.cameraX, y - 100, 10, 100);
+      ctx.fillStyle = '#6ef7a6';
+      ctx.fillRect(level.endX - game.cameraX, y - 100, 90, 10);
+    }
+
+    function drawSpikes(level) {
+      ctx.fillStyle = '#ff5d73';
+      for (const spike of level.obstacles) {
+        const drawX = spike.x - game.cameraX;
+        const drawY = spike.y;
+        const w = spike.w;
+        const h = spike.h;
+        ctx.beginPath();
+        ctx.moveTo(drawX, drawY + h);
+        for (let i = 0; i <= 4; i++) {
+          const px = drawX + (w / 4) * i;
+          const py = i % 2 === 0 ? drawY + h : drawY + h - 12;
+          ctx.lineTo(px, py);
+        }
+        ctx.lineTo(drawX + w, drawY + h);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
+    function drawPlayer() {
+      const drawX = player.x - game.cameraX;
+      const drawY = player.y;
+
+      ctx.save();
+      ctx.translate(drawX + player.w / 2, drawY + player.h / 2);
+      ctx.shadowColor = 'rgba(115,245,255,0.9)';
+      ctx.shadowBlur = 18;
+      ctx.fillStyle = player.color;
+      ctx.fillRect(-player.w / 2, -player.h / 2, player.w, player.h);
+      ctx.fillStyle = 'rgba(13,20,35,0.9)';
+      ctx.fillRect(-player.w / 2 + 8, -player.h / 2 + 9, 8, 8);
+      ctx.fillRect(player.w / 2 - 16, -player.h / 2 + 9, 8, 8);
+      ctx.restore();
+    }
+
+    function draw() {
+      drawBackground();
+
+      const level = levels[game.levelIndex];
+      drawGround(level);
+      drawSpikes(level);
+      drawPlayer();
+
+      if (!game.running && !game.won && !game.lost) {
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    function gameLoop(timestamp) {
+      const dt = Math.min((timestamp - game.lastTime) / 1000 || 0.016, 0.032);
+      game.lastTime = timestamp;
+      update(dt);
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    document.addEventListener('keydown', (event) => {
+      const key = event.key.toLowerCase();
+      keys[key] = true;
+
+      if ([' ', 'arrowup', 'w'].includes(key)) {
+        event.preventDefault();
+        if (!game.running && !menuOverlay.classList.contains('hidden')) {
+          startLevel();
+        } else {
+          jump();
+        }
+      }
+
+      if (key === 'p') {
+        togglePause();
+      }
+
+      if (key === 'r') {
+        startLevel();
+      }
+    });
+
+    document.addEventListener('keyup', (event) => {
+      keys[event.key.toLowerCase()] = false;
+    });
+
+    canvas.addEventListener('pointerdown', () => {
+      if (menuOverlay.classList.contains('hidden')) {
+        jump();
+      }
+    });
+
+    jumpButton.addEventListener('pointerdown', (event) => {
+      event.preventDefault();
+      if (menuOverlay.classList.contains('hidden')) {
+        jump();
+      } else {
+        startLevel();
+      }
+    });
+
+    pauseButton.addEventListener('pointerdown', (event) => {
+      event.preventDefault();
+      togglePause();
+    });
+
+    document.querySelectorAll('.level-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        const index = Number(button.dataset.level);
+        setCurrentLevel(index);
+      });
+    });
+
+    startButton.addEventListener('click', () => {
+      if (game.running) return;
+      startLevel();
+    });
+
+    function init() {
+      initStars();
+      setCurrentLevel(0);
+      requestAnimationFrame(gameLoop);
+    }
+
+    init();
+  </script>
+</body>
+</html>
